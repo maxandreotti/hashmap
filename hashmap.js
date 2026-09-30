@@ -7,20 +7,18 @@ class HashMap {
     this.buckets = new Array(this.capacity);
   }
 
-  /* DA COMPLETARE E SISTEMARE IN SET
-
   doubleCapacity () {
-    this.capacity = this.capacity * 2;
-    let bucket2 = new Array (this.capacity);
-    this.buckets.forEach(elemento => {
-      elemento.forEach(coppia => {
-
+    if ((this.loadFactor * this.capacity) === this.entry) {
+      this.capacity = this.capacity * 2;
+      this.entry = 0;
+      let inseriti = this.entries();
+      this.buckets = new Array(this.capacity);
+      inseriti.forEach(elemento => {
+        this.set(elemento[0], elemento[1]);
       })
-    })
-    
+      return this.buckets;
+    }
   }
-
-  */
 
   hash (key) {
     let hashCode = 0;
@@ -34,19 +32,30 @@ class HashMap {
   set(key, value) {
     let hashcode = this.hash(key);
     let target = this.buckets[hashcode];
-    this.doubleCapacity();
 
     if (target === undefined) {
+      this.doubleCapacity();
+      hashcode = this.hash(key);
       this.entry ++;
-      return this.buckets[hashcode] = [[key, value]];
+      if (this.buckets[hashcode] === undefined) {
+        return this.buckets[hashcode] = [[key, value]];
+      } else {
+        return this.buckets[hashcode].push([key, value]);
+      }
     } else {
       for (let i = 0; i < target.length; i++) {
         if (target[i][0] === key) {
           return this.buckets[hashcode][i][1] = value;
         }
       }
+      this.doubleCapacity();
+      hashcode = this.hash(key);
       this.entry ++;
-      return this.buckets[hashcode].push([key, value])
+      if (this.buckets[hashcode] === undefined) {
+        return this.buckets[hashcode] = [[key, value]];
+      } else {
+        return this.buckets[hashcode].push([key, value]);
+      }
     }
   }
 
@@ -87,6 +96,7 @@ class HashMap {
     for (let i = 0; i < target.length; i++) {
       if (target[i][0] === key) {
         this.buckets[chiave].splice(i, 1);
+        this.entry --;
         return true;
       }
     }
@@ -143,4 +153,26 @@ class HashMap {
     return inseriti;
   }
 
+  print () {
+    console.log(JSON.stringify(this.buckets));
+
+
+
+  }
+
 }
+
+const test = new HashMap() // or HashMap() if using a factory
+
+test.set('apple', 'red')
+test.set('banana', 'yellow')
+test.set('carrot', 'orange')
+test.set('dog', 'brown')
+test.set('elephant', 'gray')
+test.set('frog', 'green')
+test.set('grape', 'purple')
+test.set('hat', 'black')
+test.set('ice cream', 'white')
+test.set('jacket', 'blue')
+test.set('kite', 'pink')
+test.set('lion', 'golden')
